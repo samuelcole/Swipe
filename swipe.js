@@ -34,6 +34,11 @@ function Swipe(container, options) {
   var speed = options.speed || 300;
   options.continuous = options.continuous !== undefined ? options.continuous : true;
 
+  options.pastSlideEnd = options.pastSlideEnd !== undefined ? options.pastSlideEnd : null;
+  options.pastSlideStart = options.pastSlideStart !== undefined ? options.pastSlideStart : null;
+  options.pastResistance = options.pastResistance || 100;
+  var freeze = false;
+
   function setup() {
 
     // cache slides
@@ -224,10 +229,10 @@ function Swipe(container, options) {
 
     while(pos--) {
 
-      slides[pos].style.visibility = 'hidden';
-
       if(pos === circle(index) || pos === circle(index-1) || pos === circle(index+1)){
         slides[pos].style.visibility = 'visible';
+      } else {
+        slides[pos].style.visibility = 'hidden';    
       }
 
     }
@@ -325,7 +330,7 @@ function Swipe(container, options) {
       }
 
       // if user is not trying to scroll vertically
-      if (!isScrolling) {
+      if (!isScrolling && !freeze) {
 
         // prevent native scrolling 
         event.preventDefault();
@@ -355,6 +360,18 @@ function Swipe(container, options) {
           translate(index-1, delta.x + slidePos[index-1], 0);
           translate(index, delta.x + slidePos[index], 0);
           translate(index+1, delta.x + slidePos[index+1], 0);
+
+          // user is "pulling" on first / last slide above the set resistance. Call set function.
+          if(!index && delta.x > options.pastResistance && options.pastSlideStart){
+            offloadFn(options.pastSlideStart);
+            options.pastSlideStart = null;
+          }
+
+          if(index == slides.length - 1 && delta.x < -1 * options.pastResistance && options.pastSlideEnd){
+            offloadFn(options.pastSlideEnd);
+            options.pastSlideEnd = null;
+          }
+
         }
 
       }
@@ -382,7 +399,7 @@ function Swipe(container, options) {
       var direction = delta.x < 0;
 
       // if not scrolling vertically
-      if (!isScrolling) {
+      if (!isScrolling && !freeze) {
 
         if (isValidSlide && !isPastBounds) {
 
@@ -520,6 +537,22 @@ function Swipe(container, options) {
       next();
 
     },
+    freeze: function() {
+
+      // cancel slideshow
+      stop();
+      
+      freeze = true;
+
+    },
+    unfreeze: function() {
+
+      // cancel slideshow
+      stop();
+
+      freeze = false;
+
+    },    
     getPos: function() {
 
       // return current index position
