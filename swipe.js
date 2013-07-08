@@ -46,14 +46,7 @@ function Swipe(container, options) {
     length = slides.length;
 
     // set continuous to false if only one slide
-    if (slides.length < 2) options.continuous = false;
-
-    //special case if two slides
-    if (browser.transitions && options.continuous && slides.length < 3) {
-      element.appendChild(slides[0].cloneNode(true));
-      element.appendChild(element.children[1].cloneNode(true));
-      slides = element.children;
-    }
+    if (slides.length <= 2) options.continuous = false;
 
     // create an array to store current positions of each slide
     slidePos = new Array(slides.length);
@@ -433,7 +426,7 @@ function Swipe(container, options) {
             index = circle(index-1);
 
           }
-					
+          
           visibleThree(index, slides);
 
           options.callback && options.callback(index, slides[index]);
