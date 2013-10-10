@@ -62,7 +62,7 @@ Swipe can take an optional second parameter– an object of key/value settings:
 
 - **pastSlideEnd** Function - runs when user pulls last slide to the left and continuous is false.
 
-- **pastSlidStart** Function - runs when user pulls first slide to the right and  continuous is false.
+- **pastSlideStart** Function - runs when user pulls first slide to the right and  continuous is false.
 
 
 
