@@ -148,8 +148,6 @@ function Swipe(container, options) {
 
     index = to;
 
-    visibleThree(index, slides);
-
     offloadFn(options.callback && options.callback(index, slides[index]));
   }
 
@@ -215,11 +213,15 @@ function Swipe(container, options) {
 
   }
 
-  // hide all slides then show only current, next and prev
+  // hide all slides other than current one
   function visibleThree(index, slides) {
 
     var pos = slides.length;
 
+    // first make this one visible
+    slides[index].style.visibility = 'visible';
+
+    // then check all others for hiding
     while(pos--) {
 
       if(pos === circle(index) || pos === circle(index-1) || pos === circle(index+1)){
@@ -231,6 +233,7 @@ function Swipe(container, options) {
     }
 
   }
+
 
   // setup auto slideshow
   var delay = options.auto || 0;
@@ -426,8 +429,6 @@ function Swipe(container, options) {
             index = circle(index-1);
 
           }
-          
-          visibleThree(index, slides);
 
           options.callback && options.callback(index, slides[index]);
 
@@ -456,6 +457,8 @@ function Swipe(container, options) {
 
     },
     transitionEnd: function(event) {
+
+      visibleThree(index, slides);
 
       if (parseInt(event.target.getAttribute('data-index'), 10) == index) {
         
