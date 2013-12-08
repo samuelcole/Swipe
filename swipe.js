@@ -13,7 +13,6 @@ function Swipe(container, options) {
   // utilities
   var noop = function() {}; // simple no operation function
   var offloadFn = function(fn) { setTimeout(fn || noop, 0) }; // offload a functions execution
-  var jsLib = window.jQuery || window.Zepto;  // jQuery or Zepto 
   
   // check browser capabilities
   var browser = {
@@ -71,6 +70,8 @@ function Swipe(container, options) {
         move(pos, index > pos ? -width : (index < pos ? width : 0), 0);
       }
 
+      slides[pos].style.visibility = 'hidden';
+
     }
 
     // reposition elements before and after index
@@ -81,7 +82,9 @@ function Swipe(container, options) {
 
     if (!browser.transitions) element.style.left = (index * -width) + 'px';
 
-    visibleThree(index, slides);
+    slides[index].style.visibility = 'visible';
+    slides[circle(index+1)].style.visibility = 'visible';
+    slides[circle(index-1)].style.visibility = 'visible';
 
     container.style.visibility = 'visible';
 
@@ -149,6 +152,7 @@ function Swipe(container, options) {
 
     index = to;
 
+    visibleThree();
     offloadFn(options.callback && options.callback(index, slides[index]));
   }
 
@@ -215,9 +219,9 @@ function Swipe(container, options) {
   }
 
   // hide all slides other than current one
-  function visibleThree(index, slides) {
+  function visibleThree() {
 
-    var pos = slides.length;
+    var pos = length;
 
     // first make this one visible
     slides[index].style.visibility = 'visible';
@@ -234,7 +238,6 @@ function Swipe(container, options) {
     }
 
   }
-
 
   // setup auto slideshow
   var delay = options.auto || 0;
@@ -431,6 +434,7 @@ function Swipe(container, options) {
 
           }
 
+          visibleThree();
           options.callback && options.callback(index, slides[index]);
 
         } else {
@@ -458,8 +462,6 @@ function Swipe(container, options) {
 
     },
     transitionEnd: function(event) {
-
-      visibleThree(index, slides);
 
       if (parseInt(event.target.getAttribute('data-index'), 10) == index) {
         
@@ -556,7 +558,6 @@ function Swipe(container, options) {
       stop();
 
     },
-
     getPos: function() {
 
       // return current index position
@@ -613,7 +614,8 @@ function Swipe(container, options) {
 
 }
 
-
+var jsLib = window.jQuery || window.Zepto;  // jQuery or Zepto
+ 
 if ( jsLib ) {
   (function($) {
     $.fn.Swipe = function(params) {
