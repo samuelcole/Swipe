@@ -614,7 +614,9 @@ function Swipe(container, options) {
 
 }
 
-var jsLib = window.jQuery || window.Zepto;  // jQuery or Zepto
+var jsLib = typeof window === 'object' ?
+  window.jQuery || window.Zepto : // jQuery or Zepto
+  false;
  
 if ( jsLib ) {
   (function($) {
